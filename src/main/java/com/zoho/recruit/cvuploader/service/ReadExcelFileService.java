@@ -1,5 +1,6 @@
 package com.zoho.recruit.cvuploader.service;
 
+import com.zoho.recruit.cvuploader.model.Candidate;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,9 @@ import java.util.List;
 public class ReadExcelFileService {
 
 
-    public List<String> readExcelFileAndGetUsers(File file) {
-        List<String> strings = new ArrayList<>();
+
+    public List<Candidate> getCandidates(File file) {
+        List<Candidate> candidateList = new ArrayList<>();
         try {
 
             FileInputStream excelFile = new FileInputStream(file);
@@ -29,30 +31,33 @@ public class ReadExcelFileService {
 
                 Row currentRow = iterator.next();
                 Iterator<Cell> cellIterator = currentRow.iterator();
+                Candidate candidate = new Candidate();
+                int count = 0;
 
                 while (cellIterator.hasNext()) {
 
                     Cell currentCell = cellIterator.next();
-                    //getCellTypeEnum shown as deprecated for version 3.15
-                    //getCellTypeEnum ill be renamed to getCellType starting from version 4.0
-                    if (currentCell.getCellTypeEnum() == CellType.STRING) {
-                        System.out.print(currentCell.getStringCellValue() + "--");
-                        strings.add(currentCell.getStringCellValue());
-                    } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-                        System.out.print(currentCell.getNumericCellValue() + "--");
-                        strings.add(String.valueOf(currentCell.getNumericCellValue()));
+                    String cellStr = currentCell.getStringCellValue();
+
+                    if (count==0){
+                        candidate.setName(cellStr);
+                    } else if (count==1){
+                        candidate.setEmail(cellStr);
+                    } else if (count==2){
+                        candidate.setCvTitle(cellStr);
                     }
-
+                    count++;
                 }
-                System.out.println();
-
+                if(candidate.isValid())
+                    candidateList.add(candidate);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return strings;
+        System.out.println(candidateList.size());
+        return candidateList;
     }
 
 }

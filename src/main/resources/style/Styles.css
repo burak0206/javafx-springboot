@@ -3,6 +3,9 @@
 .btnGreen{
 	-fx-background-color:  #3cbc53;
 }
+.btnPro{
+	-fx-background-color: #bc9f51;
+}
 
 .background{
 	-fx-background-color: DODGERBLUE;
